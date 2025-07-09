@@ -1,62 +1,1920 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FM Radio Web App</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global FM Radio</title>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f1f3f4;
+            --bg-tertiary: #e8f0fe;
+            --border-color: #dadce0;
+            --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+            --card-radius: 12px;
+            --element-radius: 8px;
+            --transition: all 0.3s ease;
+            
+            /* Dark Mode Variables */
+            --dark-primary-color: #8ab4f8;
+            --dark-secondary-color: #81c995;
+            --dark-accent-color: #f28b82;
+            --dark-text-primary: #e8eaed;
+            --dark-text-secondary: #9aa0a6;
+            --dark-bg-primary: #202124;
+            --dark-bg-secondary: #303134;
+            --dark-bg-tertiary: #41331c;
+            --dark-border-color: #5f6368;
+            --dark-shadow: 0 1px 2px 0 rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+            
+            /* Neon Colors for Dark Mode */
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff00f0;
+            --neon-green: #00ff00;
+            
+            /* Ad Colors */
+            --ad-bg: #f8f9fa;
+            --ad-border: #e0e0e0;
+            --ad-text: #5f6368;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --primary-color: var(--dark-primary-color);
+            --secondary-color: var(--dark-secondary-color);
+            --accent-color: var(--dark-accent-color);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --bg-primary: var(--dark-bg-primary);
+            --bg-secondary: var(--dark-bg-secondary);
+            --bg-tertiary: var(--dark-bg-tertiary);
+            --border-color: var(--dark-border-color);
+            --shadow: var(--dark-shadow);
+            
+            /* Dark Mode Ad Colors */
+            --ad-bg: #303134;
+            --ad-border: #5f6368;
+            --ad-text: #9aa0a6;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Particle Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        [data-theme="dark"] #particles-js {
+            opacity: 0.2;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--element-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            justify-content: center;
+        }
+
+        /* Ad Container */
+        .ad-container {
+            background: var(--ad-bg);
+            border: 1px solid var(--ad-border);
+            border-radius: var(--element-radius);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            color: var(--ad-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90px;
+            transition: var(--transition);
+        }
+
+        .ad-container.top-ad {
+            margin-top: 0;
+        }
+
+        .ad-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .ad-content {
+            width: 100%;
+        }
+
+        .ad-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--element-radius);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .ad-text {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .ad-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .ad-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Player Section */
+        .player-section {
+            background: var(--bg-secondary);
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .station-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .station-country {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .station-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .play-btn {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            background: var(--secondary-color);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .volume-slider {
+            width: 100px;
+            accent-color: var(--primary-color);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--element-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .country-select {
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border-radius: var(--element-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .country-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        /* Stations List */
+        .stations-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .station-card {
+            background: var(--bg-secondary);
+            border-radius: var(--card-radius);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .station-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .station-card.active {
+            border: 2px solid var(--primary-color);
+            background: var(--bg-tertiary);
+        }
+
+        .station-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .station-card-name {
+            font-weight: bold;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            padding: 0.2rem;
+        }
+
+        .favorite-btn:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .favorite-btn.favorited {
+            color: var(--accent-color);
+        }
+
+        .station-card-country {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .station-card-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .now-playing {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            display: none;
+        }
+
+        .station-card.active .now-playing {
+            display: block;
+        }
+
+        /* Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-secondary), var(--border-color), var(--bg-secondary));
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: var(--element-radius);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            width: 80%;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-text.short {
+            width: 50%;
+        }
+
+        .skeleton-station {
+            height: 100px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .skeleton-ad {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--card-radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-title {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .settings-option {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .settings-select, .settings-toggle {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--element-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .settings-select:focus, .settings-toggle:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .toggle-option {
+            flex: 1;
+            text-align: center;
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--element-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Error Message */
+        .error-message {
+            background: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--element-radius);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            display: none;
+        }
+
+        .error-message.active {
+            display: flex;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            grid-column: 1 / -1;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .stations-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .btn-text {
+                display: none;
+            }
+            
+            .btn-icon {
+                width: 2.2rem;
+                height: 2.2rem;
+            }
+            
+            .ad-container {
+                padding: 0.75rem;
+                min-height: 80px;
+            }
+            
+            .ad-text {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Dark Mode Neon Effects */
+        [data-theme="dark"] .logo {
+            text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+
+        [data-theme="dark"] .play-btn {
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+
+        [data-theme="dark"] .station-card:hover {
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        [data-theme="dark"] .station-card.active {
+            box-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(0, 240, 255, 0.3);
+        }
+
+        [data-theme="dark"] .btn-primary {
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        [data-theme="dark"] .btn-primary:hover {
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Language Specific Styles */
+        [lang="hi"] {
+            font-family: 'Noto Sans Devanagari', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1 data-i18n="title">FM Radio</h1>
-      <div class="controls">
-        <select id="countrySelector" aria-label="Select Country"></select>
-        <input type="text" id="searchInput" placeholder="Search station..." aria-label="Search Station">
-        <button id="themeToggle">🌗</button>
-        <button id="langToggle">🌐</button>
-        <button id="bgToggle">✨</button>
-        <button id="settingsBtn">⚙️</button>
-      </div>
-    </header>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
 
-    <main>
-      <div id="stationList" class="stations"></div>
-      <div id="loading" class="loading">Loading stations...</div>
-    </main>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-radio"></i>
+                <span data-lang="en">Global FM Radio</span>
+                <span data-lang="hi" style="display: none;">ग्लोबल एफएम रेडियो</span>
+            </div>
+            <div class="controls">
+                <button class="btn btn-icon" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn btn-icon" id="languageToggle" aria-label="Toggle language">
+                    <i class="fas fa-language"></i>
+                </button>
+                <button class="btn btn-icon" id="settingsToggle" aria-label="Open settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </header>
 
-    <footer>
-      <div id="nowPlaying" class="now-playing">🎶 <span id="currentStation">None</span></div>
-      <audio id="player" controls></audio>
-    </footer>
-  </div>
+        <!-- Top Ad -->
+        <div class="ad-container top-ad" id="topAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="topAdContent">
+                <!-- Ad content will be loaded here -->
+            </div>
+        </div>
 
-  <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <h2 data-i18n="settings">Settings</h2>
-      <label>
-        <span data-i18n="theme">Theme</span>
-        <select id="themeSelect">
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-      <label>
-        <span data-i18n="language">Language</span>
-        <select id="langSelect">
-          <option value="en">English</option>
-          <option value="hi">हिंदी</option>
-        </select>
-      </label>
-      <label>
-        <span data-i18n="particles">Particles</span>
-        <input type="checkbox" id="particlesCheckbox" />
-      </label>
-      <button id="closeSettings" data-i18n="close">Close</button>
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span data-lang="en" id="errorText">An error occurred. Please try again.</span>
+            <span data-lang="hi" id="errorTextHi" style="display: none;">एक त्रुटि हुई। कृपया पुनः प्रयास करें।</span>
+        </div>
+
+        <!-- Player Section -->
+        <section class="player-section">
+            <div class="player-info">
+                <h2 class="station-name" id="currentStationName">
+                    <span data-lang="en">No station selected</span>
+                    <span data-lang="hi" style="display: none;">कोई स्टेशन चयनित नहीं</span>
+                </h2>
+                <div class="station-country" id="currentStationCountry">
+                    <i class="fas fa-globe"></i>
+                    <span data-lang="en">Select a country to browse stations</span>
+                    <span data-lang="hi" style="display: none;">स्टेशन ब्राउज़ करने के लिए एक देश चुनें</span>
+                </div>
+                <div class="station-meta" id="currentStationMeta">
+                    <div class="meta-item">
+                        <i class="fas fa-music"></i>
+                        <span>--</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-code"></i>
+                        <span>--</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-heart"></i>
+                        <span>--</span>
+                    </div>
+                </div>
+            </div>
+            <div class="player-controls">
+                <button class="play-btn" id="playBtn" aria-label="Play">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volumeSlider">
+                </div>
+            </div>
+        </section>
+
+        <!-- Middle Ad -->
+        <div class="ad-container" id="middleAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="middleAdContent">
+                <!-- Ad content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-filter">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search stations..." data-lang-placeholder='{"en": "Search stations...", "hi": "स्टेशन खोजें..."}'>
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <select class="country-select" id="countrySelect">
+                <option value="" selected disabled data-lang="en">Select a country</option>
+                <option value="" selected disabled data-lang="hi" style="display: none;">एक देश चुनें</option>
+                <!-- Countries will be populated by JavaScript -->
+            </select>
+            <button class="btn btn-primary" id="favoritesToggle">
+                <i class="fas fa-star"></i>
+                <span class="btn-text" data-lang="en">Favorites</span>
+                <span class="btn-text" data-lang="hi" style="display: none;">पसंदीदा</span>
+            </button>
+        </div>
+
+        <!-- Stations List -->
+        <div class="stations-container" id="stationsContainer">
+            <!-- Stations will be populated by JavaScript -->
+            <div class="empty-state">
+                <i class="fas fa-radio fa-3x" style="margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p data-lang="en">Select a country to load stations</p>
+                <p data-lang="hi" style="display: none;">स्टेशन लोड करने के लिए एक देश चुनें</p>
+            </div>
+        </div>
+
+        <!-- Bottom Ad -->
+        <div class="ad-container" id="bottomAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="bottomAdContent">
+                <!-- Ad content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <button class="modal-close" id="modalClose">&times;</button>
+                <h2 class="modal-title" data-lang="en">Settings</h2>
+                <h2 class="modal-title" data-lang="hi" style="display: none;">सेटिंग्स</h2>
+                
+                <div class="settings-option">
+                    <label class="settings-label" data-lang="en">Language</label>
+                    <label class="settings-label" data-lang="hi" style="display: none;">भाषा</label>
+                    <div class="toggle-group">
+                        <div class="toggle-option">
+                            <button class="toggle-btn language-option active" data-lang="en">English</button>
+                        </div>
+                        <div class="toggle-option">
+                            <button class="toggle-btn language-option" data-lang="hi">हिन्दी</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-option">
+                    <label class="settings-label" data-lang="en">Theme</label>
+                    <label class="settings-label" data-lang="hi" style="display: none;">थीम</label>
+                    <div class="toggle-group">
+                        <div class="toggle-option">
+                            <button class="toggle-btn theme-option active" data-theme="light" data-lang="en">Light</button>
+                        </div>
+                        <div class="toggle-option">
+                            <button class="toggle-btn theme-option" data-theme="dark" data-lang="en">Dark</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-option">
+                    <label class="settings-label" data-lang="en">Background Animation</label>
+                    <label class="settings-label" data-lang="hi" style="display: none;">पृष्ठभूमि एनीमेशन</label>
+                    <div class="toggle-group">
+                        <div class="toggle-option">
+                            <button class="toggle-btn bg-animation-option active" data-animation="on" data-lang="en">On</button>
+                        </div>
+                        <div class="toggle-option">
+                            <button class="toggle-btn bg-animation-option" data-animation="off" data-lang="en">Off</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-option">
+                    <label class="settings-label" data-lang="en">Ad Preferences</label>
+                    <label class="settings-label" data-lang="hi" style="display: none;">विज्ञापन प्राथमिकताएं</label>
+                    <div class="toggle-group">
+                        <div class="toggle-option">
+                            <button class="toggle-btn ad-pref-option active" data-pref="standard" data-lang="en">Standard</button>
+                        </div>
+                        <div class="toggle-option">
+                            <button class="toggle-btn ad-pref-option" data-pref="minimal" data-lang="en">Minimal</button>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;" data-lang="en">
+                        Ads help support this free service. Changing to minimal may limit some features.
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; display: none;" data-lang="hi">
+                        विज्ञापन इस निःशुल्क सेवा का समर्थन करते हैं। न्यूनतम में बदलने से कुछ सुविधाएँ सीमित हो सकती हैं।
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Element -->
+        <audio id="audioPlayer" crossorigin="anonymous"></audio>
     </div>
-  </div>
 
-  <canvas id="bgCanvas"></canvas>
-  <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const elements = {
+                themeToggle: document.getElementById('themeToggle'),
+                languageToggle: document.getElementById('languageToggle'),
+                settingsToggle: document.getElementById('settingsToggle'),
+                modalClose: document.getElementById('modalClose'),
+                settingsModal: document.getElementById('settingsModal'),
+                playBtn: document.getElementById('playBtn'),
+                volumeSlider: document.getElementById('volumeSlider'),
+                audioPlayer: document.getElementById('audioPlayer'),
+                currentStationName: document.getElementById('currentStationName'),
+                currentStationCountry: document.getElementById('currentStationCountry'),
+                currentStationMeta: document.getElementById('currentStationMeta'),
+                searchInput: document.getElementById('searchInput'),
+                countrySelect: document.getElementById('countrySelect'),
+                favoritesToggle: document.getElementById('favoritesToggle'),
+                stationsContainer: document.getElementById('stationsContainer'),
+                errorMessage: document.getElementById('errorMessage'),
+                errorText: document.getElementById('errorText'),
+                errorTextHi: document.getElementById('errorTextHi'),
+                languageOptions: document.querySelectorAll('.language-option'),
+                themeOptions: document.querySelectorAll('.theme-option'),
+                bgAnimationOptions: document.querySelectorAll('.bg-animation-option'),
+                adPrefOptions: document.querySelectorAll('.ad-pref-option'),
+                topAd: document.getElementById('topAd'),
+                topAdContent: document.getElementById('topAdContent'),
+                middleAd: document.getElementById('middleAd'),
+                middleAdContent: document.getElementById('middleAdContent'),
+                bottomAd: document.getElementById('bottomAd'),
+                bottomAdContent: document.getElementById('bottomAdContent')
+            };
+
+            // State
+            const state = {
+                currentStation: null,
+                stations: [],
+                filteredStations: [],
+                favorites: new Set(),
+                countries: [],
+                isPlaying: false,
+                showFavorites: false,
+                currentLanguage: 'en',
+                currentTheme: 'light',
+                showBgAnimation: true,
+                volume: 0.7,
+                isLoading: false,
+                adPreference: 'standard',
+                adFrequency: 5, // Show ad after every 5 station plays
+                playCount: 0,
+                adPositions: ['top', 'middle', 'bottom'],
+                currentAds: {
+                    top: null,
+                    middle: null,
+                    bottom: null
+                }
+            };
+
+            // Sample Ad Data (in a real app, this would come from an ad network)
+            const adInventory = [
+                {
+                    id: 'ad1',
+                    type: 'image',
+                    title: 'Upgrade Your Listening Experience',
+                    text: 'Get premium ad-free experience with our pro version',
+                    image: 'https://via.placeholder.com/728x90.png?text=Upgrade+Your+Listening+Experience',
+                    link: '#',
+                    cta: 'Learn More'
+                },
+                {
+                    id: 'ad2',
+                    type: 'text',
+                    title: 'Support Our Service',
+                    text: 'This free service is supported by ads. Please consider disabling your ad blocker.',
+                    link: '#',
+                    cta: 'How to Support'
+                },
+                {
+                    id: 'ad3',
+                    type: 'image',
+                    title: 'New Headphones Collection',
+                    text: 'Check out our latest collection of wireless headphones',
+                    image: 'https://via.placeholder.com/728x90.png?text=New+Headphones+Collection',
+                    link: '#',
+                    cta: 'Shop Now'
+                }
+            ];
+
+            // Initialize
+            function init() {
+                loadPreferences();
+                setupEventListeners();
+                loadCountries();
+                loadAds();
+                updateUI();
+                initParticles();
+            }
+
+            // Load user preferences from localStorage
+            function loadPreferences() {
+                const preferences = JSON.parse(localStorage.getItem('radioPlayerPreferences')) || {};
+                
+                if (preferences.theme) {
+                    state.currentTheme = preferences.theme;
+                    document.documentElement.setAttribute('data-theme', state.currentTheme);
+                    updateThemeIcon();
+                }
+                
+                if (preferences.language) {
+                    state.currentLanguage = preferences.language;
+                    updateLanguageUI();
+                }
+                
+                if (preferences.showBgAnimation !== undefined) {
+                    state.showBgAnimation = preferences.showBgAnimation;
+                    updateBgAnimation();
+                }
+                
+                if (preferences.volume !== undefined) {
+                    state.volume = preferences.volume;
+                    elements.audioPlayer.volume = state.volume;
+                    elements.volumeSlider.value = state.volume;
+                }
+                
+                if (preferences.favorites) {
+                    state.favorites = new Set(preferences.favorites);
+                }
+                
+                if (preferences.adPreference) {
+                    state.adPreference = preferences.adPreference;
+                    updateAdPreferenceUI();
+                }
+            }
+
+            // Save preferences to localStorage
+            function savePreferences() {
+                const preferences = {
+                    theme: state.currentTheme,
+                    language: state.currentLanguage,
+                    showBgAnimation: state.showBgAnimation,
+                    volume: state.volume,
+                    favorites: Array.from(state.favorites),
+                    adPreference: state.adPreference
+                };
+                localStorage.setItem('radioPlayerPreferences', JSON.stringify(preferences));
+            }
+
+            // Set up event listeners
+            function setupEventListeners() {
+                // Theme toggle
+                elements.themeToggle.addEventListener('click', toggleTheme);
+                
+                // Language toggle
+                elements.languageToggle.addEventListener('click', toggleLanguage);
+                
+                // Settings modal
+                elements.settingsToggle.addEventListener('click', () => toggleModal(true));
+                elements.modalClose.addEventListener('click', () => toggleModal(false));
+                elements.settingsModal.addEventListener('click', (e) => {
+                    if (e.target === elements.settingsModal) toggleModal(false);
+                });
+                
+                // Language options in modal
+                elements.languageOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const lang = option.getAttribute('data-lang');
+                        setLanguage(lang);
+                    });
+                });
+                
+                // Theme options in modal
+                elements.themeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const theme = option.getAttribute('data-theme');
+                        setTheme(theme);
+                    });
+                });
+                
+                // Background animation options in modal
+                elements.bgAnimationOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const animation = option.getAttribute('data-animation');
+                        setBgAnimation(animation === 'on');
+                    });
+                });
+                
+                // Ad preference options in modal
+                elements.adPrefOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const pref = option.getAttribute('data-pref');
+                        setAdPreference(pref);
+                    });
+                });
+                
+                // Player controls
+                elements.playBtn.addEventListener('click', togglePlay);
+                elements.volumeSlider.addEventListener('input', updateVolume);
+                elements.audioPlayer.addEventListener('play', () => {
+                    state.isPlaying = true;
+                    updatePlayButton();
+                });
+                elements.audioPlayer.addEventListener('pause', () => {
+                    state.isPlaying = false;
+                    updatePlayButton();
+                });
+                elements.audioPlayer.addEventListener('error', handlePlayerError);
+                elements.audioPlayer.addEventListener('ended', handlePlayEnded);
+                
+                // Search and filter
+                elements.searchInput.addEventListener('input', filterStations);
+                elements.countrySelect.addEventListener('change', loadStationsByCountry);
+                elements.favoritesToggle.addEventListener('click', toggleFavoritesView);
+            }
+
+            // Toggle theme between light and dark
+            function toggleTheme() {
+                const newTheme = state.currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            }
+
+            // Set theme
+            function setTheme(theme) {
+                state.currentTheme = theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                updateThemeIcon();
+                updateToggleButtons('.theme-option', 'data-theme', theme);
+                savePreferences();
+            }
+
+            // Update theme icon based on current theme
+            function updateThemeIcon() {
+                const icon = elements.themeToggle.querySelector('i');
+                if (state.currentTheme === 'dark') {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            }
+
+            // Toggle language between English and Hindi
+            function toggleLanguage() {
+                const newLang = state.currentLanguage === 'en' ? 'hi' : 'en';
+                setLanguage(newLang);
+            }
+
+            // Set language
+            function setLanguage(lang) {
+                state.currentLanguage = lang;
+                updateLanguageUI();
+                updateToggleButtons('.language-option', 'data-lang', lang);
+                updatePlaceholders();
+                savePreferences();
+            }
+
+            // Update UI elements based on current language
+            function updateLanguageUI() {
+                document.querySelectorAll('[data-lang]').forEach(el => {
+                    if (el.getAttribute('data-lang') === state.currentLanguage) {
+                        el.style.display = '';
+                    } else {
+                        el.style.display = 'none';
+                    }
+                });
+            }
+
+            // Update input placeholders based on current language
+            function updatePlaceholders() {
+                document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                    const placeholders = JSON.parse(el.getAttribute('data-lang-placeholder'));
+                    el.placeholder = placeholders[state.currentLanguage];
+                });
+            }
+
+            // Update active state of toggle buttons
+            function updateToggleButtons(selector, attribute, value) {
+                document.querySelectorAll(selector).forEach(btn => {
+                    if (btn.getAttribute(attribute) === value) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Toggle background animation
+            function setBgAnimation(show) {
+                state.showBgAnimation = show;
+                updateBgAnimation();
+                savePreferences();
+            }
+
+            // Update background animation visibility
+            function updateBgAnimation() {
+                const particles = document.getElementById('particles-js');
+                if (state.showBgAnimation) {
+                    particles.style.display = 'block';
+                    if (!window.particlesJS) {
+                        initParticles();
+                    }
+                } else {
+                    particles.style.display = 'none';
+                }
+                updateToggleButtons('.bg-animation-option', 'data-animation', state.showBgAnimation ? 'on' : 'off');
+            }
+
+            // Set ad preference
+            function setAdPreference(pref) {
+                state.adPreference = pref;
+                updateAdPreferenceUI();
+                updateAdVisibility();
+                savePreferences();
+            }
+
+            // Update ad preference UI
+            function updateAdPreferenceUI() {
+                updateToggleButtons('.ad-pref-option', 'data-pref', state.adPreference);
+            }
+
+            // Update ad visibility based on preference
+            function updateAdVisibility() {
+                if (state.adPreference === 'minimal') {
+                    elements.topAd.style.display = 'none';
+                    elements.middleAd.style.display = 'none';
+                    elements.bottomAd.style.display = 'none';
+                } else {
+                    elements.topAd.style.display = 'flex';
+                    elements.middleAd.style.display = 'flex';
+                    elements.bottomAd.style.display = 'flex';
+                }
+            }
+
+            // Initialize particle.js background
+            function initParticles() {
+                if (window.particlesJS) {
+                    particlesJS('particles-js', {
+                        "particles": {
+                            "number": {
+                                "value": 80,
+                                "density": {
+                                    "enable": true,
+                                    "value_area": 800
+                                }
+                            },
+                            "color": {
+                                "value": state.currentTheme === 'dark' ? "#8ab4f8" : "#4285f4"
+                            },
+                            "shape": {
+                                "type": "circle",
+                                "stroke": {
+                                    "width": 0,
+                                    "color": "#000000"
+                                },
+                                "polygon": {
+                                    "nb_sides": 5
+                                }
+                            },
+                            "opacity": {
+                                "value": 0.5,
+                                "random": false,
+                                "anim": {
+                                    "enable": false,
+                                    "speed": 1,
+                                    "opacity_min": 0.1,
+                                    "sync": false
+                                }
+                            },
+                            "size": {
+                                "value": 3,
+                                "random": true,
+                                "anim": {
+                                    "enable": false,
+                                    "speed": 40,
+                                    "size_min": 0.1,
+                                    "sync": false
+                                }
+                            },
+                            "line_linked": {
+                                "enable": true,
+                                "distance": 150,
+                                "color": state.currentTheme === 'dark' ? "#8ab4f8" : "#4285f4",
+                                "opacity": 0.4,
+                                "width": 1
+                            },
+                            "move": {
+                                "enable": true,
+                                "speed": 2,
+                                "direction": "none",
+                                "random": false,
+                                "straight": false,
+                                "out_mode": "out",
+                                "bounce": false,
+                                "attract": {
+                                    "enable": false,
+                                    "rotateX": 600,
+                                    "rotateY": 1200
+                                }
+                            }
+                        },
+                        "interactivity": {
+                            "detect_on": "canvas",
+                            "events": {
+                                "onhover": {
+                                    "enable": true,
+                                    "mode": "grab"
+                                },
+                                "onclick": {
+                                    "enable": true,
+                                    "mode": "push"
+                                },
+                                "resize": true
+                            },
+                            "modes": {
+                                "grab": {
+                                    "distance": 140,
+                                    "line_linked": {
+                                        "opacity": 1
+                                    }
+                                },
+                                "bubble": {
+                                    "distance": 400,
+                                    "size": 40,
+                                    "duration": 2,
+                                    "opacity": 8,
+                                    "speed": 3
+                                },
+                                "repulse": {
+                                    "distance": 200,
+                                    "duration": 0.4
+                                },
+                                "push": {
+                                    "particles_nb": 4
+                                },
+                                "remove": {
+                                    "particles_nb": 2
+                                }
+                            }
+                        },
+                        "retina_detect": true
+                    });
+                }
+            }
+
+            // Toggle modal visibility
+            function toggleModal(show) {
+                if (show) {
+                    elements.settingsModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    elements.settingsModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // Load ads from inventory
+            function loadAds() {
+                if (state.adPreference === 'minimal') {
+                    updateAdVisibility();
+                    return;
+                }
+                
+                // In a real app, this would fetch ads from an ad network
+                // For demo purposes, we're using sample ads
+                
+                // Load top ad
+                const topAd = getRandomAd();
+                state.currentAds.top = topAd;
+                renderAd(elements.topAdContent, topAd);
+                
+                // Load middle ad
+                const middleAd = getRandomAd();
+                state.currentAds.middle = middleAd;
+                renderAd(elements.middleAdContent, middleAd);
+                
+                // Load bottom ad
+                const bottomAd = getRandomAd();
+                state.currentAds.bottom = bottomAd;
+                renderAd(elements.bottomAdContent, bottomAd);
+                
+                updateAdVisibility();
+            }
+
+            // Get a random ad from inventory
+            function getRandomAd() {
+                const randomIndex = Math.floor(Math.random() * adInventory.length);
+                return adInventory[randomIndex];
+            }
+
+            // Render ad to the specified container
+            function renderAd(container, ad) {
+                container.innerHTML = '';
+                
+                if (ad.type === 'image') {
+                    const imgLink = document.createElement('a');
+                    imgLink.href = ad.link;
+                    imgLink.target = '_blank';
+                    imgLink.rel = 'noopener noreferrer';
+                    
+                    const img = document.createElement('img');
+                    img.src = ad.image;
+                    img.alt = ad.title;
+                    img.className = 'ad-image';
+                    
+                    imgLink.appendChild(img);
+                    container.appendChild(imgLink);
+                    
+                    const title = document.createElement('div');
+                    title.className = 'ad-text';
+                    title.textContent = ad.title;
+                    container.appendChild(title);
+                    
+                    const cta = document.createElement('a');
+                    cta.href = ad.link;
+                    cta.className = 'ad-link';
+                    cta.textContent = ad.cta;
+                    cta.target = '_blank';
+                    cta.rel = 'noopener noreferrer';
+                    container.appendChild(cta);
+                } else {
+                    const title = document.createElement('div');
+                    title.className = 'ad-text';
+                    title.textContent = ad.title;
+                    container.appendChild(title);
+                    
+                    const text = document.createElement('div');
+                    text.className = 'ad-text';
+                    text.textContent = ad.text;
+                    container.appendChild(text);
+                    
+                    const cta = document.createElement('a');
+                    cta.href = ad.link;
+                    cta.className = 'ad-link';
+                    cta.textContent = ad.cta;
+                    cta.target = '_blank';
+                    cta.rel = 'noopener noreferrer';
+                    container.appendChild(cta);
+                }
+            }
+
+            // Rotate ads periodically
+            function rotateAds() {
+                if (state.adPreference === 'minimal') return;
+                
+                // Rotate top ad
+                if (Math.random() > 0.7) {
+                    const newAd = getRandomAd();
+                    state.currentAds.top = newAd;
+                    renderAd(elements.topAdContent, newAd);
+                }
+                
+                // Rotate middle ad
+                if (Math.random() > 0.7) {
+                    const newAd = getRandomAd();
+                    state.currentAds.middle = newAd;
+                    renderAd(elements.middleAdContent, newAd);
+                }
+                
+                // Rotate bottom ad
+                if (Math.random() > 0.7) {
+                    const newAd = getRandomAd();
+                    state.currentAds.bottom = newAd;
+                    renderAd(elements.bottomAdContent, newAd);
+                }
+            }
+
+            // Load countries from Radio Browser API
+            function loadCountries() {
+                state.isLoading = true;
+                showLoadingState();
+                
+                fetch('https://de1.api.radio-browser.info/json/countries')
+                    .then(response => response.json())
+                    .then(data => {
+                        state.countries = data
+                            .filter(country => country.stationcount > 0)
+                            .sort((a, b) => b.stationcount - a.stationcount);
+                        
+                        populateCountrySelect();
+                        state.isLoading = false;
+                        updateUI();
+                    })
+                    .catch(error => {
+                        showError(state.currentLanguage === 'en' ? 
+                            'Failed to load countries. Please try again later.' : 
+                            'देश लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।');
+                        state.isLoading = false;
+                        updateUI();
+                    });
+            }
+
+            // Populate country select dropdown
+            function populateCountrySelect() {
+                elements.countrySelect.innerHTML = '';
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                defaultOption.textContent = state.currentLanguage === 'en' ? 'Select a country' : 'एक देश चुनें';
+                elements.countrySelect.appendChild(defaultOption);
+                
+                // Add countries
+                state.countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country.name;
+                    option.textContent = `${country.name} (${country.stationcount})`;
+                    elements.countrySelect.appendChild(option);
+                });
+            }
+
+            // Load stations by selected country
+            function loadStationsByCountry() {
+                const country = elements.countrySelect.value;
+                if (!country) return;
+                
+                state.isLoading = true;
+                state.showFavorites = false;
+                showLoadingState();
+                
+                fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(country)}?hidebroken=true&order=votes&reverse=true`)
+                    .then(response => response.json())
+                    .then(data => {
+                        state.stations = data.map(station => ({
+                            id: station.stationuuid,
+                            name: station.name,
+                            url: station.url_resolved || station.url,
+                            country: station.country,
+                            votes: station.votes,
+                            favicon: station.favicon,
+                            bitrate: station.bitrate,
+                            codec: station.codec,
+                            tags: station.tags
+                        }));
+                        
+                        state.filteredStations = [...state.stations];
+                        state.isLoading = false;
+                        updateUI();
+                    })
+                    .catch(error => {
+                        showError(state.currentLanguage === 'en' ? 
+                            'Failed to load stations. Please try again later.' : 
+                            'स्टेशन लोड करने में विफल। कृपया बाद में पुनः प्रयास करें।');
+                        state.isLoading = false;
+                        updateUI();
+                    });
+            }
+
+            // Show loading state
+            function showLoadingState() {
+                elements.stationsContainer.innerHTML = '';
+                
+                // Show skeleton loading for stations
+                for (let i = 0; i < 12; i++) {
+                    const skeleton = document.createElement('div');
+                    skeleton.className = 'station-card skeleton skeleton-station';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'station-card-header';
+                    
+                    const name = document.createElement('div');
+                    name.className = 'skeleton skeleton-text';
+                    header.appendChild(name);
+                    
+                    const fav = document.createElement('div');
+                    fav.className = 'skeleton';
+                    fav.style.width = '20px';
+                    fav.style.height = '20px';
+                    fav.style.borderRadius = '50%';
+                    header.appendChild(fav);
+                    
+                    const country = document.createElement('div');
+                    country.className = 'skeleton skeleton-text short';
+                    
+                    skeleton.appendChild(header);
+                    skeleton.appendChild(country);
+                    
+                    elements.stationsContainer.appendChild(skeleton);
+                }
+            }
+
+            // Filter stations based on search input
+            function filterStations() {
+                const searchTerm = elements.searchInput.value.toLowerCase();
+                
+                if (!searchTerm) {
+                    state.filteredStations = state.showFavorites ? 
+                        [...state.stations].filter(station => state.favorites.has(station.id)) : 
+                        [...state.stations];
+                } else {
+                    state.filteredStations = (state.showFavorites ? 
+                        [...state.stations].filter(station => state.favorites.has(station.id)) : 
+                        [...state.stations]).filter(station => 
+                        station.name.toLowerCase().includes(searchTerm) || 
+                        (station.tags && station.tags.toLowerCase().includes(searchTerm))
+                    );
+                }
+                
+                updateStationsList();
+            }
+
+            // Toggle favorites view
+            function toggleFavoritesView() {
+                state.showFavorites = !state.showFavorites;
+                elements.favoritesToggle.classList.toggle('active', state.showFavorites);
+                filterStations();
+            }
+
+            // Update stations list in UI
+            function updateStationsList() {
+                elements.stationsContainer.innerHTML = '';
+                
+                if (state.filteredStations.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-radio fa-3x';
+                    icon.style.marginBottom = '1rem';
+                    icon.style.opacity = '0.5';
+                    emptyState.appendChild(icon);
+                    
+                    const text = document.createElement('p');
+                    if (state.showFavorites) {
+                        text.textContent = state.currentLanguage === 'en' ? 
+                            'No favorites yet. Click the star to add stations to favorites.' : 
+                            'अभी तक कोई पसंदीदा नहीं। स्टेशनों को पसंदीदा में जोड़ने के लिए स्टार पर क्लिक करें।';
+                    } else {
+                        text.textContent = state.currentLanguage === 'en' ? 
+                            'No stations found. Try a different search.' : 
+                            'कोई स्टेशन नहीं मिला। एक अलग खोज का प्रयास करें।';
+                    }
+                    emptyState.appendChild(text);
+                    
+                    elements.stationsContainer.appendChild(emptyState);
+                    return;
+                }
+                
+                state.filteredStations.forEach(station => {
+                    const stationCard = document.createElement('div');
+                    stationCard.className = `station-card ${state.currentStation?.id === station.id ? 'active' : ''}`;
+                    stationCard.setAttribute('data-id', station.id);
+                    
+                    const header = document.createElement('div');
+                    header.className = 'station-card-header';
+                    
+                    const name = document.createElement('div');
+                    name.className = 'station-card-name';
+                    name.textContent = station.name;
+                    header.appendChild(name);
+                    
+                    const favBtn = document.createElement('button');
+                    favBtn.className = `favorite-btn ${state.favorites.has(station.id) ? 'favorited' : ''}`;
+                    favBtn.innerHTML = '<i class="fas fa-star"></i>';
+                    favBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(station.id);
+                    });
+                    header.appendChild(favBtn);
+                    
+                    const nowPlaying = document.createElement('div');
+                    nowPlaying.className = 'now-playing';
+                    nowPlaying.textContent = state.currentLanguage === 'en' ? 'Now Playing' : 'अभी चल रहा है';
+                    header.appendChild(nowPlaying);
+                    
+                    const country = document.createElement('div');
+                    country.className = 'station-card-country';
+                    country.innerHTML = `<i class="fas fa-globe"></i> ${station.country}`;
+                    
+                    const meta = document.createElement('div');
+                    meta.className = 'station-card-meta';
+                    
+                    const bitrate = document.createElement('div');
+                    bitrate.innerHTML = `<i class="fas fa-music"></i> ${station.bitrate || '--'} kbps`;
+                    
+                    const codec = document.createElement('div');
+                    codec.innerHTML = `<i class="fas fa-code"></i> ${station.codec || '--'}`;
+                    
+                    const votes = document.createElement('div');
+                    votes.innerHTML = `<i class="fas fa-heart"></i> ${station.votes}`;
+                    
+                    meta.appendChild(bitrate);
+                    meta.appendChild(codec);
+                    meta.appendChild(votes);
+                    
+                    stationCard.appendChild(header);
+                    stationCard.appendChild(country);
+                    stationCard.appendChild(meta);
+                    
+                    stationCard.addEventListener('click', () => playStation(station));
+                    
+                    elements.stationsContainer.appendChild(stationCard);
+                });
+            }
+
+            // Toggle favorite status of a station
+            function toggleFavorite(stationId) {
+                if (state.favorites.has(stationId)) {
+                    state.favorites.delete(stationId);
+                } else {
+                    state.favorites.add(stationId);
+                }
+                
+                savePreferences();
+                
+                if (state.showFavorites) {
+                    filterStations();
+                } else {
+                    updateStationsList();
+                }
+            }
+
+            // Play selected station
+            function playStation(station) {
+                // Stop current playback
+                elements.audioPlayer.pause();
+                state.isPlaying = false;
+                
+                // Update current station
+                state.currentStation = station;
+                
+                // Update UI
+                updateCurrentStationInfo();
+                updateStationsList();
+                
+                // Increment play count and check for ad rotation
+                state.playCount++;
+                if (state.playCount % state.adFrequency === 0) {
+                    rotateAds();
+                }
+                
+                // Set audio source and play
+                elements.audioPlayer.src = station.url;
+                elements.audioPlayer.play()
+                    .then(() => {
+                        state.isPlaying = true;
+                        updatePlayButton();
+                    })
+                    .catch(error => {
+                        showError(state.currentLanguage === 'en' ? 
+                            'Failed to play station. It may be unavailable.' : 
+                            'स्टेशन चलाने में विफल। यह अनुपलब्ध हो सकता है।');
+                        state.isPlaying = false;
+                        updatePlayButton();
+                    });
+            }
+
+            // Handle play ended event
+            function handlePlayEnded() {
+                state.isPlaying = false;
+                updatePlayButton();
+            }
+
+            // Toggle play/pause
+            function togglePlay() {
+                if (!state.currentStation) {
+                    showError(state.currentLanguage === 'en' ? 
+                        'No station selected' : 
+                        'कोई स्टेशन चयनित नहीं');
+                    return;
+                }
+                
+                if (state.isPlaying) {
+                    elements.audioPlayer.pause();
+                } else {
+                    elements.audioPlayer.play()
+                        .catch(error => {
+                            showError(state.currentLanguage === 'en' ? 
+                                'Failed to play station. It may be unavailable.' : 
+                                'स्टेशन चलाने में विफल। यह अनुपलब्ध हो सकता है।');
+                        });
+                }
+            }
+
+            // Update play button based on playback state
+            function updatePlayButton() {
+                const icon = elements.playBtn.querySelector('i');
+                if (state.isPlaying) {
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                } else {
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                }
+            }
+
+            // Update volume
+            function updateVolume() {
+                state.volume = parseFloat(elements.volumeSlider.value);
+                elements.audioPlayer.volume = state.volume;
+                savePreferences();
+            }
+
+            // Update current station info in player section
+            function updateCurrentStationInfo() {
+                if (!state.currentStation) {
+                    elements.currentStationName.innerHTML = state.currentLanguage === 'en' ? 
+                        'No station selected' : 'कोई स्टेशन चयनित नहीं';
+                    elements.currentStationCountry.innerHTML = '<i class="fas fa-globe"></i> ' + 
+                        (state.currentLanguage === 'en' ? 
+                        'Select a country to browse stations' : 
+                        'स्टेशन ब्राउज़ करने के लिए एक देश चुनें');
+                    
+                    const metaItems = elements.currentStationMeta.querySelectorAll('.meta-item span');
+                    metaItems[0].textContent = '--';
+                    metaItems[1].textContent = '--';
+                    metaItems[2].textContent = '--';
+                    
+                    return;
+                }
+                
+                elements.currentStationName.textContent = state.currentStation.name;
+                elements.currentStationCountry.innerHTML = `<i class="fas fa-globe"></i> ${state.currentStation.country}`;
+                
+                const metaItems = elements.currentStationMeta.querySelectorAll('.meta-item span');
+                metaItems[0].textContent = `${state.currentStation.bitrate || '--'} kbps`;
+                metaItems[1].textContent = state.currentStation.codec || '--';
+                metaItems[2].textContent = state.currentStation.votes;
+            }
+
+            // Handle player errors
+            function handlePlayerError() {
+                showError(state.currentLanguage === 'en' ? 
+                    'Error playing station. It may be unavailable.' : 
+                    'स्टेशन चलाने में त्रुटि। यह अनुपलब्ध हो सकता है।');
+                state.isPlaying = false;
+                updatePlayButton();
+            }
+
+            // Show error message
+            function showError(message) {
+                if (state.currentLanguage === 'en') {
+                    elements.errorText.textContent = message;
+                    elements.errorText.style.display = '';
+                    elements.errorTextHi.style.display = 'none';
+                } else {
+                    elements.errorTextHi.textContent = message;
+                    elements.errorText.style.display = 'none';
+                    elements.errorTextHi.style.display = '';
+                }
+                
+                elements.errorMessage.classList.add('active');
+                
+                setTimeout(() => {
+                    elements.errorMessage.classList.remove('active');
+                }, 5000);
+            }
+
+            // Update UI based on current state
+            function updateUI() {
+                updateCurrentStationInfo();
+                updateStationsList();
+                updatePlayButton();
+                updateThemeIcon();
+                updateLanguageUI();
+                updatePlaceholders();
+                updateBgAnimation();
+                updateAdPreferenceUI();
+                updateAdVisibility();
+            }
+
+            // Initialize the app
+            init();
+        });
+    </script>
 </body>
 </html>
