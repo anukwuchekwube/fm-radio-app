@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FM Radio Web App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1 data-i18n="title">FM Radio</h1>
+      <div class="controls">
+        <select id="countrySelector" aria-label="Select Country"></select>
+        <input type="text" id="searchInput" placeholder="Search station..." aria-label="Search Station">
+        <button id="themeToggle">🌗</button>
+        <button id="langToggle">🌐</button>
+        <button id="bgToggle">✨</button>
+        <button id="settingsBtn">⚙️</button>
+      </div>
+    </header>
+
+    <main>
+      <div id="stationList" class="stations"></div>
+      <div id="loading" class="loading">Loading stations...</div>
+    </main>
+
+    <footer>
+      <div id="nowPlaying" class="now-playing">🎶 <span id="currentStation">None</span></div>
+      <audio id="player" controls></audio>
+    </footer>
+  </div>
+
+  <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h2 data-i18n="settings">Settings</h2>
+      <label>
+        <span data-i18n="theme">Theme</span>
+        <select id="themeSelect">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <label>
+        <span data-i18n="language">Language</span>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+        </select>
+      </label>
+      <label>
+        <span data-i18n="particles">Particles</span>
+        <input type="checkbox" id="particlesCheckbox" />
+      </label>
+      <button id="closeSettings" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <canvas id="bgCanvas"></canvas>
+  <script src="script.js"></script>
+</body>
+</html>
