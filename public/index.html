@@ -748,16 +748,16 @@
 <body>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4539056974755636"
      crossorigin="anonymous"></script>
-<!-- Display ads -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4539056974755636"
-     data-ad-slot="9790656654"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+    <!-- Display ads -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-4539056974755636"
+         data-ad-slot="9790656654"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
     <!-- Particle Background -->
     <div id="particles-js"></div>
 
@@ -783,7 +783,15 @@
         </header>
 
         <!-- Top Ad -->
-       
+        <div class="ad-container top-ad" id="topAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="topAdContent"></div>
+        </div>
+
         <!-- Error Message -->
         <div class="error-message" id="errorMessage">
             <i class="fas fa-exclamation-circle"></i>
@@ -830,7 +838,14 @@
         </section>
 
         <!-- Middle Ad -->
-       
+        <div class="ad-container" id="middleAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="middleAdContent"></div>
+        </div>
 
         <!-- Search and Filter -->
         <div class="search-filter">
@@ -861,7 +876,14 @@
         </div>
 
         <!-- Bottom Ad -->
-        
+        <div class="ad-container" id="bottomAd">
+            <div class="ad-label">
+                <i class="fas fa-ad"></i>
+                <span data-lang="en">Advertisement</span>
+                <span data-lang="hi" style="display: none;">विज्ञापन</span>
+            </div>
+            <div class="ad-content" id="bottomAdContent"></div>
+        </div>
 
         <!-- Settings Modal -->
         <div class="modal" id="settingsModal">
@@ -961,7 +983,12 @@
                 themeOptions: document.querySelectorAll('.theme-option'),
                 bgAnimationOptions: document.querySelectorAll('.bg-animation-option'),
                 adPrefOptions: document.querySelectorAll('.ad-pref-option'),
-               
+                topAd: document.getElementById('topAd'),
+                middleAd: document.getElementById('middleAd'),
+                bottomAd: document.getElementById('bottomAd'),
+                topAdContent: document.getElementById('topAdContent'),
+                middleAdContent: document.getElementById('middleAdContent'),
+                bottomAdContent: document.getElementById('bottomAdContent')
             };
 
             // State
@@ -989,9 +1016,8 @@
                 }
             };
 
-            // Sample Ad Data (in a real app, this would come from an ad network)
-            const adInventory = [
-            ];
+            // Sample Ad Data (empty array - no placeholder ads)
+            const adInventory = [];
 
             // Initialize
             function init() {
@@ -1368,34 +1394,43 @@
                 }
                 
                 // In a real app, this would fetch ads from an ad network
-                // For demo purposes, we're using sample ads
+                // For demo purposes, we're using an empty ad inventory
                 
                 // Load top ad
                 const topAd = getRandomAd();
-                state.currentAds.top = topAd;
-                renderAd(elements.topAdContent, topAd);
+                if (topAd) {
+                    state.currentAds.top = topAd;
+                    renderAd(elements.topAdContent, topAd);
+                }
                 
                 // Load middle ad
                 const middleAd = getRandomAd();
-                state.currentAds.middle = middleAd;
-                renderAd(elements.middleAdContent, middleAd);
+                if (middleAd) {
+                    state.currentAds.middle = middleAd;
+                    renderAd(elements.middleAdContent, middleAd);
+                }
                 
                 // Load bottom ad
                 const bottomAd = getRandomAd();
-                state.currentAds.bottom = bottomAd;
-                renderAd(elements.bottomAdContent, bottomAd);
+                if (bottomAd) {
+                    state.currentAds.bottom = bottomAd;
+                    renderAd(elements.bottomAdContent, bottomAd);
+                }
                 
                 updateAdVisibility();
             }
 
             // Get a random ad from inventory
             function getRandomAd() {
+                if (adInventory.length === 0) return null;
                 const randomIndex = Math.floor(Math.random() * adInventory.length);
                 return adInventory[randomIndex];
             }
 
             // Render ad to the specified container
             function renderAd(container, ad) {
+                if (!container || !ad) return;
+                
                 container.innerHTML = '';
                 
                 if (ad.type === 'image') {
@@ -1452,22 +1487,28 @@
                 // Rotate top ad
                 if (Math.random() > 0.7) {
                     const newAd = getRandomAd();
-                    state.currentAds.top = newAd;
-                    renderAd(elements.topAdContent, newAd);
+                    if (newAd) {
+                        state.currentAds.top = newAd;
+                        renderAd(elements.topAdContent, newAd);
+                    }
                 }
                 
                 // Rotate middle ad
                 if (Math.random() > 0.7) {
                     const newAd = getRandomAd();
-                    state.currentAds.middle = newAd;
-                    renderAd(elements.middleAdContent, newAd);
+                    if (newAd) {
+                        state.currentAds.middle = newAd;
+                        renderAd(elements.middleAdContent, newAd);
+                    }
                 }
                 
                 // Rotate bottom ad
                 if (Math.random() > 0.7) {
                     const newAd = getRandomAd();
-                    state.currentAds.bottom = newAd;
-                    renderAd(elements.bottomAdContent, newAd);
+                    if (newAd) {
+                        state.currentAds.bottom = newAd;
+                        renderAd(elements.bottomAdContent, newAd);
+                    }
                 }
             }
 
